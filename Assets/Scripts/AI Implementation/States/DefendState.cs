@@ -4,45 +4,64 @@ using UnityEngine;
 
 public class DefendState : State<AI>
 {
-    #region State Instance
-    private static DefendState instance; //Static instance of the state
+    private static DefendState _instance; //Static instance of the state
 
-    private DefendState() //Constructor for the state
+    public DefendState() //Constructor for the state
     {
-        if (instance != null) //If we already have an instance of this state, we don't need another one
+        if (_instance != null) //If we already have an instance of this state, we don't need another one
             return;
-        instance = this;
+        _instance = this;
+        
     }
 
     public static DefendState Instance //Public acsessor of the state, which will return the instance
     {
         get
         {
-            if (instance == null)
+            if (_instance == null)
                 new DefendState();  //Constructs the state if we don't yet have an instance
-            return instance;
+            return _instance;
         }
     }
-    #endregion
     public override bool EnterState(AI agent)
     {
-        Debug.Log("ENTERING DEFEND STATE");
-
-        return true;
+        Debug.Log("<color=green>Parking the bus </color>");
+        return base.EnterState(agent);
     }
     public override void ExecuteState(AI agent)
     {
-        Debug.Log("EXECUTIND DEFEND STATE");
-        if (agent.data.HasEnemyFlag || agent.data.HasFriendlyFlag)
+        // Debug.Log("EXECUTIND DEFEND STATE");
+        // if (agent.data.HasEnemyFlag || agent.data.HasFriendlyFlag)
+        // {
+        //     agent.StateMachine.ChangeState(GoToFriendlyBaseState.Instance);
+        // }
+        // else
+        //     agent.actions.MoveTo(agent.data.EnemyBase);
+
+        if (agent.data.FriendlyBase.GetComponent<SetScore>()._friendlyFlagInBase)
         {
-            agent.StateMachine.ChangeState(GoToFriendlyBaseState.Instance);
+            if (agent.data.CurrentHitPoints < 70)
+                agent.StateMachine.ChangeState(HealState.Instance);
+            else if (agent.senses.GetEnemiesInView().Count > 0)
+                agent.StateMachine.ChangeState(ChaseEnemyState.Instance);
+            else if (agent.senses.GetFriendliesInView().Count > 0)
+                agent.StateMachine.ChangeState(GoToEnemyBaseState.Instance);
+            else
+                agent.actions.MoveToRandomLocation();
         }
-        else
-            agent.actions.MoveTo(agent.data.EnemyBase);
+        else 
+            {
+                if (agent.data.CurrentHitPoints < 70)
+                    agent.StateMachine.ChangeState(HealState.Instance);
+                else if (agent.senses.GetEnemiesInView().Count > 0)
+                    agent.StateMachine.ChangeState(ChaseEnemyState.Instance);
+                else
+                    agent.StateMachine.ChangeState(GoToEnemyBaseState.Instance);
+            }
+       
     }
     public override bool ExitState(AI agent)
     {
-        Debug.Log("EXITING DEFEND STATE");
-        return true;
+        return base.ExitState(agent);
     }
 }

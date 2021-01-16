@@ -18,6 +18,7 @@ public class AgentData : MonoBehaviour
     }
     public Teams EnemyTeam;
     public Teams FriendlyTeam;
+    public bool InFriendlyBase = true, InEnemyBase = true;
 
     // A tag identifying members of the enemy team
     private string _enemyTeamTag = "";
@@ -269,4 +270,22 @@ public class AgentData : MonoBehaviour
             _aiMood = AiMood.Idle;
         }
     }
+    
+    
+    void OnTriggerEnter(Collider other)
+        {
+            if (other.name == _friendlyBase.name)
+               InFriendlyBase = true;
+            else if (other.name == _enemyBase.name)
+               InEnemyBase = true;
+    
+        }
+    void OnTriggerExit(Collider other)
+        {
+            if (other.name == _friendlyBase.name)    
+                InFriendlyBase = false;
+            if (other.name == _enemyBase.name)
+               InEnemyBase = false;
+        }
+    
 }

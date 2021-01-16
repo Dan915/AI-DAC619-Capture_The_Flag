@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
+using System.Collections;
 
 /// <summary>
 /// This class provides an interface for all the actions the AI agent can take in the world
@@ -20,6 +21,7 @@ public class AgentActions : MonoBehaviour
 
     private UnityEngine.AI.NavMeshAgent _navAgent;
     private Animator _swordAnimator;
+    public bool attackCooldown;
 
     // Show the AI mood
     private AiMoodIconController _agentMoodIndicator;
@@ -211,23 +213,34 @@ public class AgentActions : MonoBehaviour
             // Only do damage if we're within attack range
             if(_agentSenses.IsInAttackRange(target))
             {
-                // Swing the sword
-                _swordAnimator.SetTrigger(AttackAnimationTrigger);
-
-                // We may not always hit
-                if (UnityEngine.Random.value < _agentData.HitProbability)
+                // Wait for attack cooldown
+                if (!attackCooldown)
                 {
-                    int actualDamage = _agentData.NormalAttackDamage;
+                    // Swing the sword
+                    _swordAnimator.SetTrigger(AttackAnimationTrigger);
 
-                    // Tell the enemy we hit them
-                    if (_agentData.IsPoweredUp)
+                    // We may not always hit
+                    if (UnityEngine.Random.value < _agentData.HitProbability)
                     {
-                        actualDamage *= _agentData.PowerUpAmount;
+                        int actualDamage = _agentData.NormalAttackDamage;
+
+                        // Tell the enemy we hit them
+                        if (_agentData.IsPoweredUp)
+                        {
+                            actualDamage *= _agentData.PowerUpAmount;
+                        }
+                        target.GetComponent<AgentData>().TakeDamage(actualDamage);
+                        attackCooldown = true;
+                        StartCoroutine(AttackCooldown());
                     }
-                    target.GetComponent<AgentData>().TakeDamage(actualDamage);
                 }
             }
         }
+    }
+    private IEnumerator AttackCooldown()
+    {
+        yield return new WaitForSeconds(0.25f);
+        attackCooldown = false;
     }
 
     /// <summary>

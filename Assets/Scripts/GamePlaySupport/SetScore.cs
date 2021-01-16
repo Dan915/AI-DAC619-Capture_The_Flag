@@ -9,10 +9,12 @@ using UnityEngine.UI;
 /// </summary>
 public class SetScore : MonoBehaviour
 {
-    public GameObject EnemyFlag;
+    public GameObject EnemyFlag, FriendlyFlag;
     public int Score;
-
-    private bool _enemyFlagInBase;
+    // Lets know the agent if enemy has their flag in base
+    public bool _enemyFlagInBase{ private set; get;}
+    // Lets know the agent if his flag is in base
+    public bool _friendlyFlagInBase{private set; get;}
     private const float ScoreTickDuration = 1.0f;
 
     /// <summary>
@@ -27,6 +29,8 @@ public class SetScore : MonoBehaviour
             _enemyFlagInBase = true;
             StartCoroutine(UpdateScore());
         }
+        if (other.gameObject.name == FriendlyFlag.name)
+            _friendlyFlagInBase = true;
     }
 
     /// <summary>
@@ -40,6 +44,8 @@ public class SetScore : MonoBehaviour
         {
             _enemyFlagInBase = false;
         }
+        if (other.gameObject.name == FriendlyFlag.name)
+            _friendlyFlagInBase = false;
     }
 
     /// <summary>
@@ -56,4 +62,5 @@ public class SetScore : MonoBehaviour
             Score++;
         }
     }
+
 }

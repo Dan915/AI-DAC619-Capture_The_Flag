@@ -79,15 +79,14 @@ using UnityEngine;
 public class AI : MonoBehaviour
 {
     // Gives access to important data about the AI agent (see above)
-    public AgentData data{get; private set;}
+    public AgentData data {get; private set;}
     // Gives access to the agent senses
-    private Sensing senses;
+    public Sensing senses {get; private set;}
     // gives access to the agents inventory
-    private InventoryController inventory;
+    public InventoryController inventory {get; private set;}
     // This is the script containing the AI agents actions
     // e.g. agentScript.MoveTo(enemy);
-    public AgentActions actions{get; private set;}
-
+    public AgentActions actions {get; private set;}
 
     // Use this for initialization
     void Start ()
@@ -102,13 +101,10 @@ public class AI : MonoBehaviour
         StateMachine.ChangeState(DefendState.Instance);
 
     }
-
-    public StateMachine<AI> StateMachine { get; set; } //The state machine of this AI Player
-
-
+    public StateMachine<AI> StateMachine { get; set; } //FSM of the agent
     void Update ()
     { 
-        StateMachine.UpdateState();  //Updates the current state that the state machine is in
+        StateMachine.UpdateState();  //Updates FSM state that currently is active
     }
 
 

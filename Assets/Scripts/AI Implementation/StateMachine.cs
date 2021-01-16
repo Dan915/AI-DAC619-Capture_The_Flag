@@ -6,7 +6,7 @@ public class StateMachine<AI>
 {
 
     State<AI> _startingState;
-    State<AI> _currentState;
+    public State<AI> _currentState {get; set;}
     State<AI> _previousState;
     public AI stateOwner; //The AI that is executing the states
         
@@ -32,6 +32,9 @@ public class StateMachine<AI>
                 _currentState.ExecuteState(stateOwner); //Update the state with a reference to the AI agent that is currently in that state
 
         }
-    
-    
+
+    internal void ChangeState(object instance)
+    {
+        throw new NotImplementedException();
+    }
 }
